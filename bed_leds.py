@@ -2,9 +2,17 @@
 # this script turns on leds for bed when motion is detected between dusk and dawn
 
 import time
-
+import RPi.GPIO as GPIO
 from neopixel import *
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+# Time in seconds to turn off after last motion detection
+time_on = 15
+
+# Time to wait between motion checks
+sleep_sec = .9
 
 # LED strip configuration:
 LED_COUNT      = 6      # Number of LED pixels.
@@ -31,8 +39,36 @@ if __name__ == '__main__':
    # Intialize the library (must be called once before other functions).
    strip.begin()
 
-   print ('Press Ctrl-C to quit.')
-   while True:               # G, R, B
-      colorWipe(strip, Color(27, 25, 30))  # Red wipe
-      colorWipe(strip, Color(0, 0, 0))  # Red wipe
+   print "turning strip off" 
+   colorWipe(strip, Color(0, 0, 0))
 
+   waiting_sec = 0
+   leds_on = 0
+
+
+   while True:               # G, R, B
+
+      if GPIO.input(4):
+         print "motion detected"
+         waiting_sec = 0
+         
+         if leds_on == 0:
+            print "turning strip on"
+            colorWipe(strip, Color(0, 0, 255))
+            leds_on = 1
+
+      
+         time.sleep(sleep_sec)
+   
+      else:
+         print "no motion detected in " + str(waiting_sec) + " seconds."
+         waiting_sec += 1
+         time.sleep(sleep_sec)
+ 
+      
+      if ( waiting_sec > time_on and leds_on == 1):
+         leds_on = 0
+         print "turning strip off" 
+         colorWipe(strip, Color(0, 0, 0))    
+  
+   
