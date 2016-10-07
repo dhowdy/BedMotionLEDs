@@ -7,12 +7,19 @@ from neopixel import *
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Time in seconds to turn off after last motion detection
-time_on = 15
+time_on = 10
 
 # Time to wait between motion checks
 sleep_sec = .9
+
+# Initialize Variables
+ledOnSpeed = 10000.0
+ledOffSpeed = 5000.0
+
 
 # LED strip configuration:
 LED_COUNT      = 6      # Number of LED pixels.
@@ -23,12 +30,37 @@ LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms=50):
+def colorWipe(strip, color, speed, wait_ms=50):
    """Wipe color across display a pixel at a time."""
    for i in range(strip.numPixels()):
       strip.setPixelColor(i, color)
       strip.show()
-      time.sleep(wait_ms/200.0)
+      time.sleep(wait_ms/speed)
+
+
+# Function that fades the LEDs on
+def fadeLEDs(status): # G R B
+   if status == "on":
+      fadeLoop = 0
+      ledSpeed = ledOnSpeed
+      while fadeLoop < 256:
+         colorWipe(strip, Color(fadeLoop, fadeLoop, 0), ledSpeed)
+         fadeLoop += 1
+      colorWipe(strip, Color(255, 255, 0), ledSpeed)
+
+   elif status == "off":
+      fadeLoop = 175
+      ledSpeed = ledOffSpeed
+      while fadeLoop > 0:
+         colorWipe(strip, Color(fadeLoop, fadeLoop, 0), ledSpeed)
+         fadeLoop -= 1
+      colorWipe(strip, Color(0, 0, 0), ledSpeed)
+
+   else:
+      print "Invalid status passed to fadeLEDs()"
+      exit(1)
+
+
 
 
 
@@ -40,7 +72,7 @@ if __name__ == '__main__':
    strip.begin()
 
    print "turning strip off" 
-   colorWipe(strip, Color(0, 0, 0))
+   colorWipe(strip, Color(0, 0, 0), 2000.0)
 
    waiting_sec = 0
    leds_on = 0
@@ -48,13 +80,13 @@ if __name__ == '__main__':
 
    while True:               # G, R, B
 
-      if GPIO.input(4):
+      if GPIO.input(4) or GPIO.input(17):
          print "motion detected"
          waiting_sec = 0
          
          if leds_on == 0:
             print "turning strip on"
-            colorWipe(strip, Color(0, 0, 255))
+            fadeLEDs("on") 
             leds_on = 1
 
       
@@ -69,6 +101,5 @@ if __name__ == '__main__':
       if ( waiting_sec > time_on and leds_on == 1):
          leds_on = 0
          print "turning strip off" 
-         colorWipe(strip, Color(0, 0, 0))    
-  
+         fadeLEDs("off")
    
