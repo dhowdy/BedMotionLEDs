@@ -24,10 +24,10 @@ rolla.solar_depression = "civil"
 central = pytz.timezone('US/Central')
 
 # Time in seconds to turn off after last motion detection
-time_on = 10
+time_on = 300
 
 # Time to wait between motion checks
-sleep_sec = .9
+sleep_sec = 0.9998
 
 # Initialize Variables
 ledOnSpeed = 10000.0
@@ -57,15 +57,15 @@ def fadeLEDs(status): # G R B
       fadeLoop = 0
       ledSpeed = ledOnSpeed
       while fadeLoop < 256:
-         colorWipe(strip, Color(fadeLoop, fadeLoop, 0), ledSpeed)
+         colorWipe(strip, Color(int(round(fadeLoop * .7)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
          fadeLoop += 1
-      colorWipe(strip, Color(255, 255, 0), ledSpeed)
+      colorWipe(strip, Color(179, 255, 26), ledSpeed)
 
    elif status == "off":
-      fadeLoop = 175
+      fadeLoop = 255
       ledSpeed = ledOffSpeed
       while fadeLoop > 0:
-         colorWipe(strip, Color(fadeLoop, fadeLoop, 0), ledSpeed)
+         colorWipe(strip, Color(int(round(fadeLoop * .7)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
          fadeLoop -= 1
       colorWipe(strip, Color(0, 0, 0), ledSpeed)
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 
    while True:               # G, R, B
-
+      print datetime.datetime.now()
       if GPIO.input(4) or GPIO.input(17):
          print "motion detected"
 
@@ -128,3 +128,4 @@ if __name__ == '__main__':
          print "turning strip off" 
          fadeLEDs("off")
    
+      print datetime.datetime.now()
