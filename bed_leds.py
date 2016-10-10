@@ -4,11 +4,24 @@
 import time
 import RPi.GPIO as GPIO
 from neopixel import *
+import pytz
+import astral
+import datetime
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Construct our location. Name, Country, Lat, Long, TZ, Elevation(M)
+rolla = astral.Location(info=("Rolla", "USA", 37.948544, -91.771530, "US/Central", 342))
+
+# Define our twilight type
+rolla.solar_depression = "civil"
+
+# Define our timezone for comparison
+central = pytz.timezone('US/Central')
 
 # Time in seconds to turn off after last motion detection
 time_on = 10
@@ -82,14 +95,26 @@ if __name__ == '__main__':
 
       if GPIO.input(4) or GPIO.input(17):
          print "motion detected"
-         waiting_sec = 0
-         
-         if leds_on == 0:
-            print "turning strip on"
-            fadeLEDs("on") 
-            leds_on = 1
 
-      
+         # Get the date and current time.
+         today = datetime.date.today()
+         now = datetime.datetime.now(central)
+
+         # Get our twilight info from Astral
+         sun = rolla.sun(date=today)
+
+         # Compare the current time to Astral's data
+         if now >= sun['dusk'] or now <= sun['dawn']:
+            print "it is dark out"
+            waiting_sec = 0
+         
+            if leds_on == 0:
+               print "turning strip on"
+               fadeLEDs("on") 
+               leds_on = 1
+
+         else: 
+            print "it is light out"
          time.sleep(sleep_sec)
    
       else:
