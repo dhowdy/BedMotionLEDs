@@ -30,12 +30,12 @@ time_on = 300
 sleep_sec = 0.9998
 
 # Initialize Variables
-ledOnSpeed = 10000.0
-ledOffSpeed = 5000.0
+ledOnSpeed = 10000000.0
+ledOffSpeed = 5000000.0
 
 
 # LED strip configuration:
-LED_COUNT      = 6      # Number of LED pixels.
+LED_COUNT      = 150      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
@@ -43,7 +43,7 @@ LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, speed, wait_ms=50):
+def colorWipe(strip, color, speed, wait_ms=5):
    """Wipe color across display a pixel at a time."""
    for i in range(strip.numPixels()):
       strip.setPixelColor(i, color)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 
    while True:               # G, R, B
-      print datetime.datetime.now()
+     
       if GPIO.input(4) or GPIO.input(17):
          print "motion detected"
 
@@ -128,4 +128,4 @@ if __name__ == '__main__':
          print "turning strip off" 
          fadeLEDs("off")
    
-      print datetime.datetime.now()
+    
