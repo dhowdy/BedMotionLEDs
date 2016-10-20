@@ -13,6 +13,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Construct our location. Name, Country, Lat, Long, TZ, Elevation(M)
 rolla = astral.Location(info=("Rolla", "USA", 37.948544, -91.771530, "US/Central", 342))
@@ -32,6 +33,21 @@ sleep_sec = 0.9998
 # Initialize Variables
 ledOnSpeed = 10000000.0
 ledOffSpeed = 5000000.0
+
+
+# Define our interrupt functions
+def button_on(channel):
+   print "The on button has been pressed. Turning LEDs on."
+   colorWipe(strip, Color(179, 255, 26), 200.0)
+
+def button_off(channel):
+   print "The off button has been pressed. Turning LEDs off."
+   colorWipe(strip, Color(0, 0, 0), 200.0)
+
+# Define our interrept event detection
+GPIO.add_event_detect(10, GPIO.FALLING, callback=button_on, bouncetime=300)
+GPIO.add_event_detect(7, GPIO.FALLING, callback=button_off, bouncetime=300)
+
 
 
 # LED strip configuration:
@@ -127,5 +143,6 @@ if __name__ == '__main__':
          leds_on = 0
          print "turning strip off" 
          fadeLEDs("off")
-   
+      
+
     
