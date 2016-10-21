@@ -47,7 +47,8 @@ def button_on(channel):
    global stripStatus
    runLoop = 0  
    print "The on button has been pressed. Turning LEDs on."
-   colorWipe(strip, Color(179, 255, 26), 200.0)
+   colorWipe(strip, Color(125, 255, 26), 200.0)
+   print "on"
    runLoop = 1
    stripStatus = 1
 
@@ -91,7 +92,7 @@ def fadeLEDs(status): # G R B
       print "turning LEDs on."
       while fadeLoop < 256 and runLoop == 1:
          for i in range(strip.numPixels()):
-            g = int(round(fadeLoop * .7))
+            g = int(round(fadeLoop * .5))
             r = fadeLoop
             b = int(round(fadeLoop * .1))
             color = Color(g, r, b) 
@@ -110,7 +111,7 @@ def fadeLEDs(status): # G R B
       colorWipe(strip, Color(0, 0, 0), ledSpeed)
 
    else:
-      print "Invalid status passed to fadeLEDs()"
+      print "Invalid status passed to fadeLEDs() or runLoop is disabled when it should not be."
       exit(1)
 
 
@@ -153,6 +154,7 @@ if __name__ == '__main__':
 
          else: 
             print "it is light out"
+
          time.sleep(sleep_sec)
    
       else:
