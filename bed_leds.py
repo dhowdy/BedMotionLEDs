@@ -30,13 +30,7 @@ time_on = 240
 # Time to wait between motion checks
 sleep_sec = 0.9998
 
-# Initialize Variables
-ledOnSpeed = 99999999.9
-ledOffSpeed = 5000000.0
-#^ Unnecessary now?
-
-
-# Global variables
+# Global variables necessary for interrupts to interact with the main program.
 runLoop = 1
 debug = 0
 stripStatus = 0
@@ -45,7 +39,7 @@ stripStatus = 0
 def button_on(channel):
    global runLoop
    global stripStatus
-   runLoop = 0  
+   runLoop = 0
    print "The on button has been pressed. Turning LEDs on."
    colorWipe(strip, Color(125, 255, 26), 200.0)
    print "on"
@@ -55,11 +49,11 @@ def button_on(channel):
 def button_off(channel):
    global runLoop
    global stripStatus
-   runLoop = 0  
+   runLoop = 0
    print "The off button has been pressed. Turning LEDs off."
    colorWipe(strip, Color(0, 0, 0), 200.0)
    print "off"
-   runLoop = 1  
+   runLoop = 1
    stripStatus = 0
 
 # Define our interrept event detection
@@ -81,6 +75,7 @@ def colorWipe(strip, color, speed, wait_ms=.1):
    for i in range(strip.numPixels()):
       strip.setPixelColor(i, color)
       strip.show()
+ # Removing the sleep so this goes as fast as possible. May add it back later.
  #     time.sleep(wait_ms/speed)
 
 
@@ -90,23 +85,18 @@ def fadeLEDs(status): # G R B
       fadeLoop = 0
       ledSpeed = ledOnSpeed
       print "turning LEDs on."
+      # Start at 0 and work our way up to turn on.
       while fadeLoop < 256 and runLoop == 1:
-         for i in range(strip.numPixels()):
-            g = int(round(fadeLoop * .5))
-            r = fadeLoop
-            b = int(round(fadeLoop * .1))
-            color = Color(g, r, b) 
-            strip.setPixelColor(i, color)
-            strip.show()
+         colorWipe(strip, Color(int(round(fadeLoop * .5)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
          fadeLoop += 15
-      #colorWipe(strip, Color(179, 255, 26), ledSpeed)
 
    elif status == "off" and runLoop == 1:
       fadeLoop = 255
       ledSpeed = ledOffSpeed
       print "turning LEDs off."
+      # Start at 255 and work our way down to turn off.
       while fadeLoop > 0 and runLoop == 1:
-         colorWipe(strip, Color(int(round(fadeLoop * .7)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
+         colorWipe(strip, Color(int(round(fadeLoop * .5)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
          fadeLoop -= 10
       colorWipe(strip, Color(0, 0, 0), ledSpeed)
 
@@ -117,21 +107,25 @@ def fadeLEDs(status): # G R B
 
 
 if __name__ == '__main__':
-   runLoop = 1
-   stripStatus = 0
+   runLoop = 1      #Enable loops to run
+
+   print "turning strip off"
+   colorWipe(strip, Color(0, 0, 0), 2000.0)
+
+   stripStatus = 0  #Strip is off on startup
+
    # Create NeoPixel object with appropriate configuration.
    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
    # Intialize the library (must be called once before other functions).
    strip.begin()
 
-   print "turning strip off" 
-   colorWipe(strip, Color(0, 0, 0), 2000.0)
-
-   waiting_sec = 0
+   waiting_sec = 0 # Initialize the variable
 
 
    while True:               # G, R, B
-     
+
+
+      # Detect motion from PIR sensors
       if GPIO.input(4) or GPIO.input(17):
          print "motion detected"
 
@@ -142,31 +136,29 @@ if __name__ == '__main__':
          # Get our twilight info from Astral
          sun = rolla.sun(date=today)
 
-         # Compare the current time to Astral's data
+         # Compare the current time to Astral's data (or if Debug mode is enabled)
          if now >= sun['dusk'] or now <= sun['dawn'] or debug == 1:
             print "It is dark out or debug mode is on."
+            # Reset our counter
             waiting_sec = 0
-         
+
             if stripStatus == 0:
                print "turning strip on"
-               fadeLEDs("on") 
+               fadeLEDs("on")
                stripStatus = 1
 
-         else: 
+         else:
             print "it is light out"
 
          time.sleep(sleep_sec)
-   
+
       else:
          print "no motion detected in " + str(waiting_sec) + " seconds."
          waiting_sec += 1
          time.sleep(sleep_sec)
- 
-      
+
+
       if waiting_sec > time_on and stripStatus == 1 and runLoop == 1:
          stripStatus = 0
-         print "turning strip off via fadeLEDs" 
+         print "turning strip off via fadeLEDs"
          fadeLEDs("off")
-      
-
-    
