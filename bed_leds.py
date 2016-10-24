@@ -41,7 +41,7 @@ def button_on(channel):
    global stripStatus
    runLoop = 0
    print "The on button has been pressed. Turning LEDs on."
-   colorWipe(strip, Color(125, 255, 26), 200.0)
+   colorWipe(strip, Color(0, 255, 0), 200.0)
    print "on"
    runLoop = 1
    stripStatus = 1
@@ -83,20 +83,20 @@ def colorWipe(strip, color, speed, wait_ms=.1):
 def fadeLEDs(status): # G R B
    if status == "on" and runLoop ==1:
       fadeLoop = 0
-      ledSpeed = ledOnSpeed
+      ledSpeed = 0
       print "turning LEDs on."
       # Start at 0 and work our way up to turn on.
       while fadeLoop < 256 and runLoop == 1:
-         colorWipe(strip, Color(int(round(fadeLoop * .5)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
+         colorWipe(strip, Color(int(round(fadeLoop * 0)), fadeLoop, int(round(fadeLoop * 0))), ledSpeed)
          fadeLoop += 15
 
    elif status == "off" and runLoop == 1:
       fadeLoop = 255
-      ledSpeed = ledOffSpeed
+      ledSpeed = 0
       print "turning LEDs off."
       # Start at 255 and work our way down to turn off.
       while fadeLoop > 0 and runLoop == 1:
-         colorWipe(strip, Color(int(round(fadeLoop * .5)), fadeLoop, int(round(fadeLoop * .1))), ledSpeed)
+         colorWipe(strip, Color(int(round(fadeLoop * 0)), fadeLoop, int(round(fadeLoop * 0))), ledSpeed)
          fadeLoop -= 10
       colorWipe(strip, Color(0, 0, 0), ledSpeed)
 
@@ -109,8 +109,6 @@ def fadeLEDs(status): # G R B
 if __name__ == '__main__':
    runLoop = 1      #Enable loops to run
 
-   print "turning strip off"
-   colorWipe(strip, Color(0, 0, 0), 2000.0)
 
    stripStatus = 0  #Strip is off on startup
 
@@ -118,6 +116,9 @@ if __name__ == '__main__':
    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
    # Intialize the library (must be called once before other functions).
    strip.begin()
+
+   print "turning strip off"
+   colorWipe(strip, Color(0, 0, 0), 2000.0)
 
    waiting_sec = 0 # Initialize the variable
 
