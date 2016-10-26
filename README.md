@@ -46,7 +46,9 @@ You will need to adjust the Lat/Long coordinates to your home town in the softwa
 
 You will need to adjust the color multipliers to achieve the color that you would like.  For example:
 Red is ```Color(int(round(fadeLoop * 0)), fadeLoop, int(round(fadeLoop * 0)))```
+
 Blue is ```Color(int(round(fadeLoop * 0)), int(round(fadeLoop * 0)), fadeLoop)```
+
 A warm yellowish color is ```Color(int(round(fadeLoop * .5)), fadeLoop, int(round(fadeLoop * .1)))```
 
 Basically, you'll need to move the 'fadeLoop' variable to your brightest RGB (this implementation uses GRB ordering) color and adjust the proportion of the other two colors.  In the last example, G will be 1/2 or R while B will be 1/10 of R.  This was a simple and fast implementation that worked for 99% of my uses.  
