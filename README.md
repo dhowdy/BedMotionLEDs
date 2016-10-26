@@ -57,3 +57,5 @@ Basically, you'll need to move the 'fadeLoop' variable to your brightest RGB (th
 ### Updates
 
 This code is not very polished. There are still a lot of references and variables that are not used. I probably won't be cleaning these up.  But I'm happy to accept pull requests for anyone that wants to improve on this idea.
+
+This repo also includes a copy of https://github.com/jgarff/rpi_ws281x.git.  It's likely that not all of these files are needed.  Keeping them here anyway.
