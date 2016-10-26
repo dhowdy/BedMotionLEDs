@@ -34,4 +34,4 @@ git clone https://github.com/dhowdy/BedMotionLEDs.git
 Add a line to the autostart shell script file in your /etc/rc.local script.
 
 ### Hardware Schematic
-![wiring diagram]
+![wiring diagram](https://raw.githubusercontent.com/dhowdy/BedMotionLEDs/master/MotionDetectedBedLEDs.png)
